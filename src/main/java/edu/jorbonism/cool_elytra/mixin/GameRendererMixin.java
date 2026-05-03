@@ -47,10 +47,18 @@ public abstract class GameRendererMixin {
 					double direction = Math.signum(velocity.x * facing.z - velocity.z * facing.x); // = which side laterally each vector is on
 					angle = Math.atan(Math.sqrt(horizontalSpeed2) * Math.acos(dot) * CoolElytraConfig.wingPower) * direction * CoolElytraClient.TODEG;
 				}
-				CoolElytraClient.rollAngle = smoothRollAngle(angle, frameTime);
-				
+				if (CoolElytraConfig.rollSmoothingAfterLanding) {
+					CoolElytraClient.rollAngle = smoothRollAngle(angle, frameTime);
+				} else {
+					angle += Math.pow(CoolElytraConfig.rollSmoothing, frameTime * 40) * (CoolElytraClient.rollAngle - angle);
+					CoolElytraClient.rollAngle = angle;
+				}
 			} else {
-				CoolElytraClient.rollAngle = smoothRollAngle(0, frameTime);
+				if (CoolElytraConfig.rollSmoothingAfterLanding) {
+					CoolElytraClient.rollAngle = smoothRollAngle(0, frameTime);
+				} else {
+					CoolElytraClient.rollAngle = 0.0f;
+				}
 			}
 			
 			CoolElytraClient.yawVelocity = 0;
